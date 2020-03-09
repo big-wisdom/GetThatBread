@@ -11,9 +11,15 @@ class Menus extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final menusList = Provider.of<MenusModel>(context);
-    List<MenuBar> menuBars = [];
-    for (int x = 0; x < menusList.menus.length; x++) {
-      menuBars.add(MenuBar(menusList.menus[x]));
+    List<Dismissible> menuBars = [];
+    for (Menu menu in menusList.menus) {
+      menuBars.add(
+        Dismissible(
+          key: Key(menu.id),
+          onDismissed: (direction) => menusList.removeMenu(menu),
+          child: MenuBar(menu),
+        ),
+      );
     }
 
     return Scaffold(

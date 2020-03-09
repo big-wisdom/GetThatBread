@@ -18,7 +18,8 @@ class MenusModel extends ChangeNotifier {
             (x) => {
               menus.add(
                 Menu(
-                  title: x['title'],
+                  title: x[DatabaseHelper.columnTitle],
+                  id: x[DatabaseHelper.columnId].toString(),
                 ),
               ),
             },
@@ -35,6 +36,7 @@ class MenusModel extends ChangeNotifier {
 
   void removeMenu(Menu menu) {
     menus.remove(menu);
+    db.delete(int.parse(menu.id));
     notifyListeners();
   }
 }
