@@ -10,8 +10,24 @@ class MenuBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
+      decoration: BoxDecoration(
+        border: Border(
+          bottom: BorderSide(color: Colors.black),
+        ),
+      ),
+      height: 60,
       child: Row(
-        children: <Widget>[Text(title)],
+        children: <Widget>[
+          Padding(
+            padding: EdgeInsets.only(left: 10),
+            child: Text(
+              title,
+              style: TextStyle(
+                fontSize: 20.0,
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
