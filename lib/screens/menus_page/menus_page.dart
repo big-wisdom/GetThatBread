@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:get_that_bread/database/database_helper.dart';
 import 'package:get_that_bread/models/menu.dart';
 import 'package:get_that_bread/models/menus_model.dart';
-import 'package:get_that_bread/screens/menus/widgets/menu_bar.dart';
+import 'package:get_that_bread/screens/menus_page/widgets/menu_bar.dart';
 import 'package:provider/provider.dart';
 
-class Menus extends StatelessWidget {
+class MenusPage extends StatelessWidget {
   final db = DatabaseHelper.instance;
 
   @override
@@ -15,8 +15,11 @@ class Menus extends StatelessWidget {
     for (Menu menu in menusList.menus) {
       menuBars.add(
         Dismissible(
-          key: Key(menu.id),
-          onDismissed: (direction) => menusList.removeMenu(menu),
+          key: Key(menu.title),
+          onDismissed: (direction) {
+            menusList.removeMenu(menu);
+            menuBars.remove(this);
+          },
           child: MenuBar(menu),
         ),
       );
@@ -27,7 +30,7 @@ class Menus extends StatelessWidget {
         title: Text("Menus"),
       ),
       body: Container(
-        child: Flex(direction: Axis.vertical, children: menuBars),
+        child: ListView(children: menuBars),
       ),
       floatingActionButton:
           FloatingActionButton(onPressed: () => addMenu(context, menusList)),
@@ -36,7 +39,7 @@ class Menus extends StatelessWidget {
 
   void addMenu(context, MenusModel menusList) async {
     String title = await _createAlertDialog(context);
-    menusList.addMenu(Menu(title: title));
+    if (title != null) menusList.addMenu(Menu(title: title));
   }
 
   Future<String> _createAlertDialog(BuildContext context) {

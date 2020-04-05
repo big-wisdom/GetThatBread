@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:get_that_bread/screens/menus/menus.dart';
+import 'package:get_that_bread/screens/menus_page/menus_page.dart';
 import 'package:provider/provider.dart';
 import 'models/menus_model.dart';
 
@@ -24,7 +24,7 @@ class GetThatBread extends StatelessWidget {
         // is not restarted.
         primarySwatch: Colors.blue,
       ),
-      home: Menus(),
+      home: MenusPage(),
     );
   }
 }
