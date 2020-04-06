@@ -2,10 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:get_that_bread/database/database_helper.dart';
 import 'package:get_that_bread/models/menu.dart';
 import 'package:get_that_bread/models/menus_model.dart';
-import 'package:get_that_bread/screens/menus_page/widgets/menu_bar.dart';
 import 'package:provider/provider.dart';
 
-class MenusPage extends StatelessWidget {
+import 'widgets/menu_bar.dart';
+
+class MenusRoute extends StatelessWidget {
   final db = DatabaseHelper.instance;
 
   @override
@@ -15,7 +16,7 @@ class MenusPage extends StatelessWidget {
     for (Menu menu in menusList.menus) {
       menuBars.add(
         Dismissible(
-          key: Key(menu.title),
+          key: UniqueKey(),
           onDismissed: (direction) {
             menusList.removeMenu(menu);
             menuBars.remove(this);
@@ -39,7 +40,8 @@ class MenusPage extends StatelessWidget {
 
   void addMenu(context, MenusModel menusList) async {
     String title = await _createAlertDialog(context);
-    if (title != null) menusList.addMenu(Menu(title: title));
+    if (title != null)
+      menusList.addMenu(Menu(title: title, id: UniqueKey().toString()));
   }
 
   Future<String> _createAlertDialog(BuildContext context) {

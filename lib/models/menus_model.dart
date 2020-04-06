@@ -30,13 +30,19 @@ class MenusModel extends ChangeNotifier {
 
   void addMenu(Menu menu) {
     menus.add(menu);
-    db.insert({DatabaseHelper.columnTitle: menu.title});
+    db.insert(
+      {
+        DatabaseHelper.columnTitle: menu.title,
+        DatabaseHelper.columnId: menu.id,
+      },
+    );
     notifyListeners();
   }
 
   void removeMenu(Menu menu) {
     menus.remove(menu);
-    db.delete(int.parse(menu.id));
+    debugPrint("Menu Id: " + menu.id);
+    db.delete(menu.id);
     notifyListeners();
   }
 }

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:get_that_bread/screens/menus_page/menus_page.dart';
 import 'package:provider/provider.dart';
 import 'models/menus_model.dart';
+import 'routes/menus_route/menus_route.dart';
 
 void main() => runApp(ChangeNotifierProvider(
     create: (context) => MenusModel(), child: GetThatBread()));
@@ -24,7 +24,7 @@ class GetThatBread extends StatelessWidget {
         // is not restarted.
         primarySwatch: Colors.blue,
       ),
-      home: MenusPage(),
+      home: MenusRoute(),
     );
   }
 }

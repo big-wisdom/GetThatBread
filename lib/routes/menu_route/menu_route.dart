@@ -1,11 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:get_that_bread/models/menu.dart';
 
-class MenuScreen extends StatelessWidget {
+class MenuRoute extends StatelessWidget {
+  Menu menu;
+  MenuRoute(Menu menu) {
+    this.menu = menu;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Menu"),
+        title: Text(menu.title),
       ),
       body: Container(
         child: Text(
