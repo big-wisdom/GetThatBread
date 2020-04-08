@@ -1,27 +1,16 @@
 import 'package:flutter/material.dart';
-import 'package:get_that_bread/models/menu.dart';
-import 'package:get_that_bread/models/menu_model.dart';
-import 'package:get_that_bread/routes/menu_route/menu_route.dart';
-import 'package:provider/provider.dart';
+import 'package:get_that_bread/models/dish.dart';
 
-class MenuBar extends StatelessWidget {
-  Menu menu;
-  MenuBar(Menu menu) {
-    this.menu = menu;
+class DishBar extends StatelessWidget {
+  Dish dish;
+  DishBar(Dish dish) {
+    this.dish = dish;
   }
 
   @override
   Widget build(BuildContext context) {
     return InkWell(
-        onTap: () => Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => ChangeNotifierProvider(
-                  create: (context) => MenuModel(menu),
-                  child: MenuRoute(menu),
-                ),
-              ),
-            ),
+        onTap: () => debugPrint("Tapped: ${dish.title}"),
         child: Container(
           decoration: BoxDecoration(
             border: Border(
@@ -34,7 +23,7 @@ class MenuBar extends StatelessWidget {
               Padding(
                 padding: EdgeInsets.only(left: 10),
                 child: Text(
-                  menu.title,
+                  dish.title,
                   style: TextStyle(
                     fontSize: 20.0,
                   ),

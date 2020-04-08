@@ -1,5 +1,7 @@
 import 'dart:io';
 
+import 'package:get_that_bread/models/dish.dart';
+import 'package:get_that_bread/models/menu.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 
@@ -44,6 +46,32 @@ class DatabaseHelper {
 
   // Helper methods
 
+  // Creates a new table to store the dishes of that menu
+  // and add the title of this menu to the menus table
+  Future newMenu(Menu menu) async {
+    // Create a table for that menus dishes
+    Database db = await instance.database;
+    await db.execute('''CREATE TABLE ${menu.title} (
+        id TEXT PRIMARY KEY,
+        title TEXT NOT NULL
+      )
+    ''');
+
+    // add the title to the list of menus
+    db.insert(
+      table,
+      {"id": menu.id, "title": menu.title},
+    );
+  }
+
+  Future newDish(Menu menu, Dish dish) async {
+    Database db = await instance.database;
+    db.insert(
+      menu.title,
+      {"id": dish.id, "title": dish.title},
+    );
+  }
+
   // Inserts a row in the database where each key in the Map is a column name
   // and the value is the column value. The return value is the id of the
   // inserted row.
@@ -54,7 +82,7 @@ class DatabaseHelper {
 
   // All of the rows are returned as a list of maps, where each map is
   // a key-value list of columns.
-  Future<List<Map<String, dynamic>>> queryAllRows() async {
+  Future<List<Map<String, dynamic>>> queryAllRows(String table) async {
     Database db = await instance.database;
     return await db.query(table);
   }
@@ -77,8 +105,8 @@ class DatabaseHelper {
 
   // Deletes the row specified by the id. The number of affected rows is
   // returned. This should be 1 as long as the row exists.
-  Future<int> delete(String id) async {
+  Future<int> delete(String myTable, String id) async {
     Database db = await instance.database;
-    return await db.delete(table, where: '$columnId = ?', whereArgs: [id]);
+    return await db.delete(myTable, where: '$columnId = ?', whereArgs: [id]);
   }
 }

@@ -12,37 +12,34 @@ class MenusModel extends ChangeNotifier {
 
   void readFromDatabase() {
     debugPrint("Reading menus from Database");
-    Future<List<Map<String, dynamic>>> fromDb = db.queryAllRows();
-    fromDb.then((value) => {
-          value.forEach(
-            (x) => {
-              menus.add(
-                Menu(
-                  title: x[DatabaseHelper.columnTitle],
-                  id: x[DatabaseHelper.columnId].toString(),
-                ),
+    Future<List<Map<String, dynamic>>> fromDb = db.queryAllRows("menus");
+    fromDb.then(
+      (value) {
+        value.forEach(
+          (x) => {
+            menus.add(
+              Menu(
+                title: x[DatabaseHelper.columnTitle],
+                id: x[DatabaseHelper.columnId].toString(),
               ),
-            },
-          ),
-          notifyListeners(),
-        });
+            ),
+          },
+        );
+        notifyListeners();
+      },
+    );
   }
 
   void addMenu(Menu menu) {
     menus.add(menu);
-    db.insert(
-      {
-        DatabaseHelper.columnTitle: menu.title,
-        DatabaseHelper.columnId: menu.id,
-      },
-    );
+    db.newMenu(menu);
     notifyListeners();
   }
 
   void removeMenu(Menu menu) {
     menus.remove(menu);
-    debugPrint("Menu Id: " + menu.id);
-    db.delete(menu.id);
+    debugPrint("Dismissing: " + menu.title);
+    db.delete("menus", menu.id);
     notifyListeners();
   }
 }
