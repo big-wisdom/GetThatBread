@@ -39,7 +39,7 @@ class MenusModel extends ChangeNotifier {
   void removeMenu(Menu menu) {
     menus.remove(menu);
     debugPrint("Dismissing: " + menu.title);
-    db.delete("menus", menu.id);
+    db.deleteMenu(menu);
     notifyListeners();
   }
 }

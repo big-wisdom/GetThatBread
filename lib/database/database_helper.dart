@@ -64,6 +64,14 @@ class DatabaseHelper {
     );
   }
 
+  Future deleteMenu(Menu menu) async {
+    Database db = await instance.database;
+    // Remove from list of menus
+    await db.delete("menus", where: '$columnId = ?', whereArgs: [menu.id]);
+    // Delete that menu table
+    await db.execute('''DROP TABLE ${menu.title}''');
+  }
+
   Future newDish(Menu menu, Dish dish) async {
     Database db = await instance.database;
     db.insert(
