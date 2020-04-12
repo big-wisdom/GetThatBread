@@ -78,8 +78,16 @@ class DatabaseHelper {
     Database db = await instance.database;
     // Remove from list of menus
     await db.delete("menus", where: '$columnId = ?', whereArgs: [menu.id]);
-    // Delete that menu table
-    await db.execute('''DROP TABLE ${menu.title}''');
+    // Delete this menu table
+    await db.execute('''DROP TABLE IF EXISTS ${menu.title}''');
+  }
+
+  Future deleteDish(Menu menu, Dish dish) async {
+    Database db = await instance.database;
+    // Remove from list of menus
+    await db.delete(menu.title, where: '$columnId = ?', whereArgs: [dish.id]);
+    // Delete this dish table
+    await db.execute('''DROP TABLE IF EXISTS ${dish.title}''');
   }
 
   Future newDish(Menu menu, Dish dish) async {

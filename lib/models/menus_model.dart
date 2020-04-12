@@ -39,6 +39,11 @@ class MenusModel extends ChangeNotifier {
   void removeMenu(Menu menu) {
     menus.remove(menu);
     debugPrint("Dismissing: " + menu.title);
+    // TODO: recursivelly delete the dishes
+    // add a 'needed by' data field to dishes, and ingredients, 
+    // signifying for ingredients how many dishes use them,
+    // and signifying for dishes how many menus use them
+    // delete them if their only parent is being deleted, otherwise leave them
     db.deleteMenu(menu);
     notifyListeners();
   }
