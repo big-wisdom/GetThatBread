@@ -1,27 +1,16 @@
 import 'package:flutter/material.dart';
-import 'package:get_that_bread/models/dish.dart';
-import 'package:get_that_bread/models/dish_model.dart';
-import 'package:get_that_bread/routes/dish_route/dish_route.dart';
-import 'package:provider/provider.dart';
+import 'package:get_that_bread/models/ingredient.dart';
 
-class DishBar extends StatelessWidget {
-  Dish dish;
-  DishBar(Dish dish) {
-    this.dish = dish;
+class IngredientBar extends StatelessWidget {
+  Ingredient ingredient;
+  IngredientBar(Ingredient ingredient) {
+    this.ingredient = ingredient;
   }
 
   @override
   Widget build(BuildContext context) {
     return InkWell(
-        onTap: () => Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => ChangeNotifierProvider(
-                  create: (context) => DishModel(dish),
-                  child: DishRoute(dish),
-                ),
-              ),
-            ),
+        onTap: () => debugPrint("You tapped ${this.ingredient.title}"),
         child: Container(
           decoration: BoxDecoration(
             border: Border(
@@ -34,7 +23,7 @@ class DishBar extends StatelessWidget {
               Padding(
                 padding: EdgeInsets.only(left: 10),
                 child: Text(
-                  dish.title,
+                  ingredient.title,
                   style: TextStyle(
                     fontSize: 20.0,
                   ),

@@ -31,6 +31,7 @@ class MenuModel extends ChangeNotifier {
   }
 
   void addDish(Dish dish) {
+    debugPrint("Adding dish: ${dish.title}");
     dishes.add(dish);
     db.newDish(menu, dish);
     notifyListeners();

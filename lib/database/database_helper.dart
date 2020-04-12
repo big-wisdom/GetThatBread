@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:get_that_bread/models/dish.dart';
+import 'package:get_that_bread/models/ingredient.dart';
 import 'package:get_that_bread/models/menu.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
@@ -36,8 +37,17 @@ class DatabaseHelper {
 
   // SQL code to create the database table
   Future _onCreate(Database db, int version) async {
+    // create the menus table
     await db.execute('''
           CREATE TABLE $table (
+            $columnId TEXT PRIMARY KEY,
+            $columnTitle TEXT NOT NULL
+          )
+          ''');
+
+    // create the ingredients data table
+    await db.execute('''
+          CREATE TABLE ingredients (
             $columnId TEXT PRIMARY KEY,
             $columnTitle TEXT NOT NULL
           )
@@ -74,11 +84,35 @@ class DatabaseHelper {
 
   Future newDish(Menu menu, Dish dish) async {
     Database db = await instance.database;
+    // Add this to the respective menus table
     db.insert(
       menu.title,
       {"id": dish.id, "title": dish.title},
     );
+
+    // create a new table for this dish
+    await db.execute('''CREATE TABLE ${dish.title} (
+        id TEXT PRIMARY KEY,
+        title TEXT NOT NULL
+      )
+    ''');
   }
+
+  Future newIngredient(Dish dish, Ingredient ingredient) async {
+    Database db = await instance.database;
+    // Add this to the respective dish table
+    db.insert(
+      dish.title,
+      {"id": ingredient.id, "title": ingredient.title},
+    );
+
+    // add this ingredient to the ingredients table
+    db.insert(
+      "ingredients",
+      {"id": ingredient.id, "title": ingredient.title},
+    );
+  }
+
 
   // Inserts a row in the database where each key in the Map is a column name
   // and the value is the column value. The return value is the id of the
