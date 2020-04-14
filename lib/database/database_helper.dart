@@ -6,6 +6,11 @@ import 'package:get_that_bread/models/menu.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 
+// TODO: MAJOR RESTRUCTURE
+// shelled database structure
+// Create a database kernel, only vary basic functionality, no protection
+// Create application agnostic security shell for kernel
+// create application specific use of the shell
 class DatabaseHelper {
   static final _databaseName = "GetThatBread.db";
   static final _databaseVersion = 1;
@@ -45,11 +50,21 @@ class DatabaseHelper {
           )
           ''');
 
-    // create the ingredients data table
+    // create the global dishes table
+    await db.execute('''
+          CREATE TABLE dishes (
+            $columnId TEXT PRIMARY KEY,
+            $columnTitle TEXT NOT NULL,
+            neededBy INTEGER NOT NULL
+          )
+          ''');
+
+    // create the global ingredients data table
     await db.execute('''
           CREATE TABLE ingredients (
             $columnId TEXT PRIMARY KEY,
-            $columnTitle TEXT NOT NULL
+            $columnTitle TEXT NOT NULL,
+            neededBy INTEGER NOT NULL
           )
           ''');
   }
@@ -59,19 +74,59 @@ class DatabaseHelper {
   // Creates a new table to store the dishes of that menu
   // and add the title of this menu to the menus table
   Future newMenu(Menu menu) async {
-    // Create a table for that menus dishes
     Database db = await instance.database;
-    await db.execute('''CREATE TABLE ${menu.title} (
-        id TEXT PRIMARY KEY,
-        title TEXT NOT NULL
-      )
-    ''');
 
     // add the title to the list of menus
     db.insert(
       table,
       {"id": menu.id, "title": menu.title},
     );
+
+    // Create a table for that menus dishes
+    await db.execute('''CREATE TABLE ${menu.title} (
+        id TEXT PRIMARY KEY,
+        title TEXT NOT NULL,
+      )
+    ''');
+  }
+
+  Future newDish(Menu menu, Dish dish) async {
+    Database db = await instance.database;
+
+    // Add this to the respective menu table
+    db.insert(
+      menu.title,
+      {"id": dish.id, "title": dish.title},
+    );
+
+    // check if dish already exists in the database
+    Map<String, dynamic> currentEntry = await dishExistsAlready(dish);
+    if (currentEntry == null) {
+      // Add to the global dishes list
+      db.insert(
+        "dishes",
+        {"id": dish.id, "title": dish.title, "neededBy": 1},
+      );
+      // create a new table for this dish
+      await db.execute('''CREATE TABLE ${dish.title} (
+        id TEXT PRIMARY KEY,
+        title TEXT NOT NULL
+      )
+      ''');
+    } else {
+      // if entry already exists, incrament needed by
+      currentEntry["neededBy"] += 1;
+      return await db.update(table, currentEntry, where: '$columnId = ?', whereArgs: [currentEntry[columnId]]);
+    }
+  }
+
+  Future<Map<String, dynamic>> dishExistsAlready(dish) async {
+    // TODO: test an easier way of doing this with a more specific query of a table
+    List<Map<String, dynamic>> dishes = await this.queryAllRows("dishes");
+    for (Map<String, dynamic> dbDish in dishes) {
+      if (dbDish["title"] == dish.title) return dbDish;
+    }
+    return null;
   }
 
   Future deleteMenu(Menu menu) async {
@@ -90,22 +145,6 @@ class DatabaseHelper {
     await db.execute('''DROP TABLE IF EXISTS ${dish.title}''');
   }
 
-  Future newDish(Menu menu, Dish dish) async {
-    Database db = await instance.database;
-    // Add this to the respective menus table
-    db.insert(
-      menu.title,
-      {"id": dish.id, "title": dish.title},
-    );
-
-    // create a new table for this dish
-    await db.execute('''CREATE TABLE ${dish.title} (
-        id TEXT PRIMARY KEY,
-        title TEXT NOT NULL
-      )
-    ''');
-  }
-
   Future newIngredient(Dish dish, Ingredient ingredient) async {
     Database db = await instance.database;
     // Add this to the respective dish table
@@ -117,10 +156,9 @@ class DatabaseHelper {
     // add this ingredient to the ingredients table
     db.insert(
       "ingredients",
-      {"id": ingredient.id, "title": ingredient.title},
+      {"id": ingredient.id, "title": ingredient.title, "neededBy": 1},
     );
   }
-
 
   // Inserts a row in the database where each key in the Map is a column name
   // and the value is the column value. The return value is the id of the
